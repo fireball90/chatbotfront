@@ -31,12 +31,14 @@ export default function Chat() {
                 fetch('https://api.openweathermap.org/data/2.5/weather?q=Miskolc,hun&APPID=fdd8ad86b4117907ffa7825c71bf9b47')
                   .then(response => response.json())
                   .then(data => {   
+                    setLoading(false);
                     const celsius = kelvinToCelsius(data.main.temp);                
                     const msg = {
                         sender: "ai",
                         message: `${celsius} °C - ${data.name}`
                     }
                     setMessages(prevMessages => [...prevMessages, msg]);
+                    setNewMessage('');
                     })
                   .catch(error => {
                     console.error('GET request failed:', error);
@@ -48,7 +50,8 @@ export default function Chat() {
                             newMessage.toLocaleLowerCase() === "ötöslottó"){
                                 fetch('https://bet.szerencsejatek.hu/PublicInfo/ResultJSON.aspx?game=LOTTO5&query=last')
                                 .then(response => response.json())
-                                .then(data => {   
+                                .then(data => {  
+                                    setLoading(false); 
                                     const extractedNumbers = data.game[0].draw['win-number-list'].number.map(
                                         numberObj => parseInt(numberObj.xml)
                                       );           
@@ -57,17 +60,20 @@ export default function Chat() {
                                       message: `${extractedNumbers}`
                                   }
                                   setMessages(prevMessages => [...prevMessages, msg]);
+                                  setNewMessage('');
                                   })
                                 .catch(error => {
                                   console.error('GET request failed:', error);
                                 }); 
             return;                     
         }
-
-        fetch('http://127.0.0.1:8000/logs/', {
+        //https://81ef-91-147-254-140.ngrok-free.app/logs/
+        //http://127.0.0.1:8000/logs/
+        fetch('https://81ef-91-147-254-140.ngrok-free.app/logs/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': 'https://81ef-91-147-254-140.ngrok-free.app/',
             },
             body: JSON.stringify({
                 "logid": localStorage.getItem('randomId'),
